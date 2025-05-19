@@ -1,5 +1,10 @@
 # NextJS + Supabase + NextAuth 認証アプリケーション
 
+## 関連プロジェクト
+
+このプロジェクトは、NextAuth未使用版のリポジトリを参考にしています：
+[nextjs-supabase-regacy-auth](https://github.com/nogataka/nextjs-supabase-regacy-auth)
+
 ## 概要
 
 このプロジェクトは、Next.js、TypeScript、Supabase、NextAuthを組み合わせて構築された認証システムを実装したウェブアプリケーションです。ユーザー登録、ログイン、認証後のダッシュボードアクセスなどの機能を提供します。
