@@ -119,4 +119,79 @@ yarn dev
 
 ## ライセンス
 
-[MIT](LICENSE) 
+[MIT](LICENSE)
+
+## Supabase設定ガイド
+
+### 1. Supabaseプロジェクトの作成
+
+1. [Supabase公式サイト](https://supabase.com/)にアクセスし、アカウントを作成
+2. 新しいプロジェクトを作成
+3. プロジェクトのダッシュボードから以下の情報を取得:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+### 2. 認証の設定
+
+1. 「Authentication」セクションで認証方法を設定
+   - メールとパスワードによる認証を有効化
+   - 必要に応じて他の認証プロバイダを追加
+
+### 3. データベース設定
+
+#### Notesテーブルの作成
+
+SQL Editorで以下のSQLを実行し、Notesテーブルを作成します：
+
+```sql
+-- Notesテーブルの作成
+CREATE TABLE notes (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID NOT NULL,
+    title TEXT NOT NULL,
+    content TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    
+    -- ユーザーテーブルとの外部キー制約
+    FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE
+);
+
+-- RLS（行レベルセキュリティ）ポリシーの設定
+ALTER TABLE notes ENABLE ROW LEVEL SECURITY;
+
+-- ユーザー自身のノートのみ操作を許可するポリシー
+CREATE POLICY "Users can insert their own notes" 
+    ON notes FOR INSERT 
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can select their own notes" 
+    ON notes FOR SELECT 
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own notes" 
+    ON notes FOR UPDATE 
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own notes" 
+    ON notes FOR DELETE 
+    USING (auth.uid() = user_id);
+
+-- インデックスの追加（パフォーマンス最適化）
+CREATE INDEX idx_notes_user_id ON notes(user_id);
+```
+
+### 4. RLS（行レベルセキュリティ）の重要性
+
+- 上記のSQLで設定したポリシーにより、各ユーザーは自分のデータのみを操作可能
+- セキュリティを強化し、データの不正アクセスを防止
+
+### 5. 注意点
+
+- サービスロールキーは絶対に公開しないでください
+- 本番環境では、さらに厳密な認証とセキュリティ設定を検討してください
+
+### トラブルシューティング
+
+- テーブル作成後、データが正しく挿入・取得できない場合は、RLSポリシーを確認
+- 認証エラーが発生する場合は、Supabaseの設定と環境変数を再確認 
