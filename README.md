@@ -51,7 +51,14 @@ src/
 
 ### 1. 環境変数の設定
 
-プロジェクトルートに `.env.local` ファイルを作成し、以下の変数を設定します：
+プロジェクトルートに `.env.local.sample` ファイルを参考にして `.env.local` ファイルを作成します。以下の手順に従ってください：
+
+1. `.env.local.sample` をコピーして `.env.local` を作成
+```bash
+cp .env.local.sample .env.local
+```
+
+2. `.env.local` ファイルを編集し、以下の値を適切に設定します：
 
 ```
 # Supabase設定
@@ -65,6 +72,10 @@ NEXTAUTH_SECRET=your_nextauth_secret
 # アプリモード（'supabase' または 'nextauth'）
 APP_MODE=supabase
 ```
+
+**注意**: 
+- `NEXT_PUBLIC_SUPABASE_URL` と `NEXT_PUBLIC_SUPABASE_ANON_KEY` は Supabase プロジェクトダッシュボードから取得
+- `NEXTAUTH_SECRET` は安全なランダムな文字列（例: `openssl rand -hex 32`）
 
 ### 2. 依存関係のインストール
 
